@@ -22,12 +22,20 @@
   --t-cap: clamp(1.05rem,2vw,1.55rem);
   --body:'DM Sans',system-ui,-apple-system,sans-serif;
   --pad:clamp(24px,5vw,80px);
+  /* motion curves — the built-in easings are too weak to read as intentional */
+  --e-out:cubic-bezier(.23,1,.32,1);
+  --e-io:cubic-bezier(.77,0,.175,1);
+  --e-cine:cubic-bezier(.16,1,.3,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--bone);font-family:var(--body);
   -webkit-font-smoothing:antialiased;overflow-x:hidden;overscroll-behavior-y:none}
 img{max-width:100%;display:block;image-rendering:-webkit-optimize-contrast}
+/* canvas is a replaced element — inset:0 alone leaves it at its intrinsic
+   300x150 and the field renders into a corner box instead of the section.
+   Every full-bleed canvas must be sized explicitly. */
+canvas[id^="field"],#powder{width:100%;height:100%}
 a{text-decoration:none;color:inherit}
 ::selection{background:var(--gold);color:var(--ink)}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -190,6 +198,34 @@ section{position:relative}
 #fieldB{position:absolute;inset:0;z-index:0}
 .a2-glow{position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse 60% 45% at 50% 50%,rgba(30,109,113,.13) 0%,transparent 65%)}
+/* volumetric shafts — the room has depth and air, not a flat black field.
+   Three planes at different rates so the parallax never reads as one sheet. */
+.a2-rays{position:absolute;inset:-25% -40%;z-index:1;pointer-events:none;
+  mix-blend-mode:screen;opacity:.55}
+.a2-rays i{position:absolute;top:0;bottom:0;width:26%;display:block;
+  background:linear-gradient(97deg,transparent 0%,rgba(200,148,58,.05) 38%,
+    rgba(255,244,222,.085) 50%,rgba(200,148,58,.05) 62%,transparent 100%);
+  filter:blur(22px);will-change:transform}
+.a2-rays i:nth-child(1){left:6%;  animation:rayDrift 19s var(--e-io) infinite alternate}
+.a2-rays i:nth-child(2){left:38%; animation:rayDrift 25s var(--e-io) infinite alternate-reverse;opacity:.7}
+.a2-rays i:nth-child(3){left:68%; animation:rayDrift 31s var(--e-io) infinite alternate;opacity:.5}
+@keyframes rayDrift{
+  0%  {transform:translateX(-9%)  skewX(-7deg) scaleY(1)}
+  100%{transform:translateX(9%)   skewX(-4deg) scaleY(1.08)}}
+/* slow ember motes that rise through the whole pinned act */
+.a2-embers{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.5}
+.a2-embers i{position:absolute;bottom:-12px;width:2px;height:2px;border-radius:50%;
+  background:var(--gold-lt);box-shadow:0 0 7px 1.5px rgba(200,148,58,.55);
+  animation:emberRise linear infinite}
+@keyframes emberRise{
+  0%  {transform:translate3d(0,0,0) scale(.5);opacity:0}
+  12% {opacity:.85}
+  78% {opacity:.5}
+  100%{transform:translate3d(var(--dx,14px),-104svh,0) scale(1);opacity:0}}
+@media(prefers-reduced-motion:reduce){
+  .a2-rays i,.a2-embers i{animation:none}
+  .a2-embers{display:none}
+}
 .a2-stage{position:relative;z-index:2;text-align:center;padding:0 var(--pad);width:100%}
 .a2-line{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(1100px,92vw);opacity:0;pointer-events:none}
@@ -281,13 +317,35 @@ section{position:relative}
 #act5{background:var(--ink);position:relative;overflow:hidden;
   padding-bottom:clamp(40px,6vh,70px)}
 .a5-top{text-align:center;padding:clamp(78px,11vh,124px) var(--pad) clamp(24px,3.4vh,38px)}
-.a5-stage{position:relative;width:min(924px,94vw);margin-inline:auto;
-  aspect-ratio:1848/940;overflow:hidden;border:1px solid rgba(200,148,58,.10);
-  background:var(--carbon)}
+/* full-bleed cinematic plate — no boxed border, no card. The plate IS the frame. */
+.a5-stage{position:relative;width:min(1500px,96vw);margin-inline:auto;
+  aspect-ratio:1848/940;overflow:hidden;background:var(--ink);
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path 1.5s var(--e-io)}
+.a5-stage.lit{clip-path:inset(0 0 0 0)}
 .a5-stage img{width:100%;height:100%;object-fit:cover;object-position:center center;
   will-change:transform}
-.a5-fade{position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(180deg,rgba(4,6,7,.55) 0%,transparent 16%,transparent 84%,rgba(4,6,7,.75) 100%)}
+/* powder drifting in front of the plate — the product breathing.
+   canvas is a replaced element: inset:0 alone leaves it at its intrinsic
+   300x150, so the box must be sized explicitly. */
+#powder{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+/* the light that finds the product, once, as it lands */
+.a5-sweep{position:absolute;inset:-30% -50%;z-index:3;pointer-events:none;
+  background:linear-gradient(104deg,
+    transparent 0%,transparent 40%,
+    rgba(255,246,228,.07) 47%,rgba(255,248,232,.17) 50%,rgba(255,246,228,.07) 53%,
+    transparent 60%,transparent 100%);
+  mix-blend-mode:screen;transform:translateX(-120%);opacity:0}
+.a5-stage.lit .a5-sweep{transform:translateX(120%);opacity:1;
+  transition:transform 1.9s var(--e-io) .35s,opacity 1.9s ease .35s}
+.a5-fade{position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:
+    radial-gradient(ellipse 88% 78% at 50% 50%,transparent 24%,rgba(4,6,7,.34) 76%,rgba(4,6,7,.72) 100%),
+    linear-gradient(180deg,rgba(4,6,7,.62) 0%,transparent 15%,transparent 82%,rgba(4,6,7,.88) 100%)}
+@media(prefers-reduced-motion:reduce){
+  .a5-stage{clip-path:none;transition:none}
+  .a5-sweep{display:none}
+}
 .a5-spec{display:grid;grid-template-columns:repeat(4,1fr);
   gap:clamp(14px,2.6vw,40px);max-width:880px;margin:clamp(30px,4.2vh,48px) auto 0;
   padding:0 var(--pad)}
@@ -579,6 +637,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <section id="act2" aria-label="The signal">
   <div class="a2-pin">
     <canvas id="fieldB" aria-hidden="true"></canvas>
+    <div class="a2-rays" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="a2-embers" id="a2embers" aria-hidden="true"></div>
     <div class="a2-glow" aria-hidden="true"></div>
     <span class="a2-num mono" id="a2num">01 / 04</span>
     <div class="a2-stage">
@@ -664,6 +724,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
       srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1848w"
       sizes="(max-width:620px) 100vw, 924px"
       alt="EMBER Pre-Workout, both flavours" loading="lazy" decoding="async">
+    <canvas id="powder" aria-hidden="true"></canvas>
+    <div class="a5-sweep" aria-hidden="true"></div>
     <div class="a5-fade" aria-hidden="true"></div>
   </div>
   <div class="a5-spec">
@@ -1145,6 +1207,113 @@ addEventListener('resize', onScroll, {passive:true});
 update();
 if (RM){ for (const k in SM) SM[k] = TG[k]; update(); }
 else loop();
+
+/* ═══════════ EMBER MOTES (Act II) ═══════════
+   Seeded once in CSS-driven motion so they run off the main thread and stay
+   smooth while the pinned sequence is scrubbing. */
+(function(){
+  const host = $('#a2embers');
+  if (!host || RM) return;
+  const frag = document.createDocumentFragment();
+  for (let i=0;i<18;i++){
+    const e = document.createElement('i');
+    e.style.left = (Math.random()*100).toFixed(2) + '%';
+    e.style.setProperty('--dx', ((Math.random()-.5)*90).toFixed(0) + 'px');
+    e.style.animationDuration = (11 + Math.random()*15).toFixed(1) + 's';
+    e.style.animationDelay = (-Math.random()*22).toFixed(1) + 's';
+    frag.appendChild(e);
+  }
+  host.appendChild(frag);
+})();
+
+/* ═══════════ POWDER FIELD (Act V) ═══════════
+   Fine particulate falling through the plate with turbulent drift — the
+   product breathing rather than sitting still. Grains are sub-pixel-soft and
+   settle at varying rates, so the field never reads as a uniform snowfall. */
+function Powder(canvas){
+  if (!canvas || RM) return;
+  const ctx = canvas.getContext('2d', {alpha:true});
+  let W=0, H=0, dpr=1, g=[], vis=false, t=0;
+
+  function size(){
+    dpr = Math.min(devicePixelRatio||1, 2);
+    const r = canvas.getBoundingClientRect();
+    if (!r.width) return;
+    W = r.width; H = r.height;
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function grain(seed){
+    return {
+      x: Math.random()*W,
+      y: seed ? Math.random()*H : -Math.random()*H*.3,
+      z: .3 + Math.random()*.7,            // depth → size, speed, opacity
+      vy: .22 + Math.random()*.75,          // fall rate
+      dx: (Math.random()-.5)*.30,           // lateral drift
+      ph: Math.random()*Math.PI*2,          // turbulence phase
+      sw: .5 + Math.random()*1.5,           // sway amplitude
+      r:  .35 + Math.random()*1.15,
+      gold: Math.random() < .34,
+      a:  .10 + Math.random()*.42
+    };
+  }
+  function build(){
+    if (!W) return;
+    const n = Math.round(150 * clamp(W/1400, .5, 1.25));
+    g = Array.from({length:n}, () => grain(true));
+  }
+  size(); build();
+  addEventListener('resize', () => { size(); build(); }, {passive:true});
+  new IntersectionObserver(e => { vis = e[0].isIntersecting; },{threshold:0}).observe(canvas);
+
+  (function frame(){
+    requestAnimationFrame(frame);
+    if (!vis || !W) return;
+    t += .0065;
+    ctx.clearRect(0,0,W,H);
+    // scroll velocity pushes the grain — the field reacts to the reader
+    const drag = clamp(velSm/22, -2.2, 2.2);
+    for (let i=0;i<g.length;i++){
+      const p = g[i];
+      p.ph += .0085;
+      p.y += (p.vy * p.z) - drag*p.z*1.1;
+      p.x += (p.dx + Math.sin(p.ph + t*1.6)*.34*p.sw) * p.z;
+      if (p.y > H+8){ Object.assign(p, grain(false)); p.y = -6; }
+      if (p.y < -14) p.y = H+6;
+      if (p.x < -8)  p.x = W+6;
+      if (p.x > W+8) p.x = -6;
+
+      const rr = p.r * p.z * 2.4;
+      const al = p.a * p.z;
+      const c  = p.gold ? '200,148,58' : '150,205,208';
+      const rg = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rr);
+      rg.addColorStop(0,  `rgba(${c},${al})`);
+      rg.addColorStop(.5, `rgba(${c},${al*.36})`);
+      rg.addColorStop(1,  `rgba(${c},0)`);
+      ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,6.2832);
+      ctx.fillStyle = rg; ctx.fill();
+    }
+  })();
+}
+Powder($('#powder'));
+
+/* ═══════════ ACT V REVEAL ═══════════
+   The plate is clipped shut until it is genuinely in view, then it opens and
+   the sweep runs once. One-shot: a reveal that repeats stops being a reveal. */
+const a5stage = $('.a5-stage');
+if (a5stage){
+  if (RM) a5stage.classList.add('lit');
+  else {
+    /* observe the SECTION, never the stage: IntersectionObserver honours
+       clip-path, and a stage clipped shut reports zero intersection — it
+       could never trigger the reveal that unclips it. */
+    new IntersectionObserver((es, obs) => {
+      if (!es[0].isIntersecting) return;
+      obs.disconnect();
+      a5stage.classList.add('lit');
+    }, {threshold:0, rootMargin:'0px 0px -18% 0px'}).observe($('#act5'));
+  }
+}
 
 /* ═══════════ CURSOR GLOW ═══════════ */
 const cg = $('#cursor-glow');
