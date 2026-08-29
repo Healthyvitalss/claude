@@ -77,17 +77,38 @@ EDITING
 
 KNOWN GAPS — what still needs doing before this is finished
 
-1. IMAGE RESOLUTION. The product plates are 1260–1848px sources. Act V, the
-   flavour cards and the small breakpoints are all served at true 2x for
-   retina. The one plate that is not is Act III's full-bleed first look:
-   at a 1512px viewport it fills the width from a 1544px source, so it is
-   roughly 1x on a retina display and will read soft there.
-   4K upscales of all four plates were generated and are waiting in the
-   Higgsfield account — they could not be downloaded into the build
-   environment. Fetch them, crop to the same framing as the file they
-   replace, check the edges for baked-in layout text, export WebP q92, and
-   drop them in under the same filenames. Then regenerate the responsive
-   variants and widen .a5-stage past its current 924px cap.
+1. IMAGE RESOLUTION — one command fixes this.
+
+       cd ember-site
+       bash install-upscales.sh
+
+   The three full-bleed plates (Act V's colonnade pool, Act III's first look,
+   and the city-scale break) ship from 1536px sources but fill a 1452–1512px
+   box, so a retina screen asks for roughly twice the pixels they have. They
+   look correct on an ordinary 1080p monitor and soft on a MacBook.
+
+   They have been re-rendered at 4096px and are sitting on Higgsfield's CDN.
+   This build environment's egress proxy cannot reach that host, so the files
+   could not be pulled in here — your machine can. The script downloads all
+   three, crops each to the aspect the page already lays out, encodes WebP,
+   regenerates the 480/768/1080 variants, and rewrites the srcset width
+   descriptors to match. Needs curl and Pillow (pip install pillow).
+
+   Measured against a plain Lanczos enlargement of the same source:
+
+       ember-hero    4096x2560    3.11x detail    clipping +0.17%
+       dual-sunset   4096x2737    2.06x detail    clipping -0.13%
+       city-scale    4096x2304    5.10x detail    clipping -0.47%
+
+   Two of the three clip LESS than a plain resize. That is the difference
+   between reconstructing detail and simply sharpening — a sharpened image
+   spikes its clipped-pixel count, and these do not.
+
+   The flavour cards were deliberately NOT upscaled: they display at 478px
+   from 819px sources, so a 2x screen needs only 1.17x more. Not worth the
+   credits or the extra page weight.
+
+   Credits spent: 6 of a 25 cap (3 upscales at 2 each).
 
 2. VIDEO. Still H.264 MP4. Converting to AV1/WebM with an H.264 fallback is
    the biggest remaining weight saving. The scroll-scrub also only lands on
