@@ -49,17 +49,20 @@ canvas[id^="field"],#powder{width:100%;height:100%}
    can consciously see at rest is a bug, so these are deliberately near the
    threshold of perception. */
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.028)}}
-@keyframes railLight{0%{background-position:-140% 0}100%{background-position:240% 0}}
+/* transform, not background-position: animating background-position repaints the
+   element every frame, transform only composites. */
+@keyframes railLight{0%{transform:translate3d(-120%,0,0)}100%{transform:translate3d(120%,0,0)}}
 @keyframes markGlint{0%,88%,100%{opacity:.55}94%{opacity:1}}
-@keyframes iconShimmer{0%,92%,100%{box-shadow:0 0 0 0 rgba(200,148,58,0)}
-  96%{box-shadow:0 0 14px 2px rgba(200,148,58,.22)}}
+/* opacity on a pre-rendered ring, not an animated box-shadow: box-shadow is a
+   paint property and re-rasterises the element on every frame it changes. */
+@keyframes iconShimmer{0%,92%,100%{opacity:0}96%{opacity:1}}
 /* light travelling along the gold hairlines */
 .a4-triad,.a5-spec div,.pass-head{position:relative}
-.a4-triad::after,.pass-head::after{content:'';position:absolute;left:0;right:0;height:1px;
+.a4-triad,.pass-head{overflow:hidden}
+.a4-triad::after,.pass-head::after{content:'';position:absolute;left:0;width:60%;height:1px;
   pointer-events:none;
-  background:linear-gradient(90deg,transparent 0%,transparent 40%,
-    rgba(227,182,92,.55) 50%,transparent 60%,transparent 100%);
-  background-size:220% 100%;animation:railLight 8.5s linear infinite}
+  background:linear-gradient(90deg,transparent,rgba(227,182,92,.55),transparent);
+  animation:railLight 8.5s linear infinite;will-change:transform}
 .a4-triad::after{top:-1px}
 .pass-head::after{bottom:-1px;animation-duration:11s;animation-delay:2s}
 /* the pass corner marks catch light on a slow rotation */
@@ -68,12 +71,15 @@ canvas[id^="field"],#powder{width:100%;height:100%}
 .pass span.cm:nth-of-type(3){animation-delay:4.5s}
 .pass span.cm:nth-of-type(4){animation-delay:6.75s}
 /* benefit icons shimmer one at a time, 8s apart */
-.perk .ic{animation:iconShimmer 32s ease-in-out infinite}
-.perk:nth-child(2) .ic{animation-delay:8s}
-.perk:nth-child(3) .ic{animation-delay:16s}
-.perk:nth-child(4) .ic{animation-delay:24s}
+.perk .ic{position:relative}
+.perk .ic::after{content:'';position:absolute;inset:-3px;border-radius:50%;pointer-events:none;
+  box-shadow:0 0 14px 2px rgba(200,148,58,.22);opacity:0;
+  animation:iconShimmer 32s ease-in-out infinite;will-change:opacity}
+.perk:nth-child(2) .ic::after{animation-delay:8s}
+.perk:nth-child(3) .ic::after{animation-delay:16s}
+.perk:nth-child(4) .ic::after{animation-delay:24s}
 @media(prefers-reduced-motion:reduce){
-  .a4-triad::after,.pass-head::after,.pass span.cm,.perk .ic{animation:none}
+  .a4-triad::after,.pass-head::after,.pass span.cm,.perk .ic::after{animation:none}
 }
 a{text-decoration:none;color:inherit}
 ::selection{background:var(--gold);color:var(--ink)}
@@ -91,14 +97,19 @@ a{text-decoration:none;color:inherit}
   transition:opacity .5s;opacity:0}
 
 /* ── FILM GRAIN ── */
-#grain{position:fixed;inset:-50%;z-index:9998;pointer-events:none;opacity:.045;
+/* inset was -50%, which made this FOUR TIMES the viewport area — a
+   continuously animating full-screen layer at 4x cost. -6% is enough cover for
+   the reduced travel below. */
+#grain{position:fixed;inset:-6%;z-index:9998;pointer-events:none;opacity:.045;
+  will-change:transform;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:grainShift 7s steps(9) infinite;will-change:transform}
+  }
 @keyframes grainShift{
-  0%{transform:translate(0,0)}11%{transform:translate(-3%,-4%)}22%{transform:translate(-7%,2%)}
-  33%{transform:translate(4%,-6%)}44%{transform:translate(-2%,7%)}55%{transform:translate(-6%,3%)}
-  66%{transform:translate(6%,1%)}77%{transform:translate(-4%,-5%)}88%{transform:translate(2%,6%)}
-  100%{transform:translate(0,0)}}
+  0%{transform:translate3d(0,0,0)}11%{transform:translate3d(-1.5%,-2%,0)}
+  22%{transform:translate3d(-3%,1%,0)}33%{transform:translate3d(2%,-3%,0)}
+  44%{transform:translate3d(-1%,3.5%,0)}55%{transform:translate3d(-3%,1.5%,0)}
+  66%{transform:translate3d(3%,.5%,0)}77%{transform:translate3d(-2%,-2.5%,0)}
+  88%{transform:translate3d(1%,3%,0)}100%{transform:translate3d(0,0,0)}}
 
 /* ── PROGRESS ── */
 #prog{position:fixed;top:0;left:0;height:1px;width:0;z-index:9999;
@@ -127,7 +138,7 @@ a{text-decoration:none;color:inherit}
   padding:clamp(16px,2.4vw,28px) var(--pad);
   transition:padding .5s cubic-bezier(.16,1,.3,1),background .5s,backdrop-filter .5s}
 #nav.solid{padding:14px var(--pad);background:rgba(4,6,7,.94);
-  backdrop-filter:blur(26px) saturate(1.3);-webkit-backdrop-filter:blur(26px) saturate(1.3);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid rgba(200,148,58,.10)}
 .n-l{grid-column:1;display:flex;gap:clamp(18px,2.6vw,34px);align-items:center;min-width:0}
 .n-l a{font-size:.62rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;
@@ -256,12 +267,16 @@ section{position:relative}
   background:radial-gradient(ellipse 60% 45% at 50% 50%,rgba(30,109,113,.13) 0%,transparent 65%)}
 /* volumetric shafts — the room has depth and air, not a flat black field.
    Three planes at different rates so the parallax never reads as one sheet. */
-.a2-rays{position:absolute;inset:-25% -40%;z-index:1;pointer-events:none;
-  mix-blend-mode:screen;opacity:.55}
+.a2-rays{position:absolute;inset:-25% -40%;z-index:1;pointer-events:none;opacity:.5}
+/* No filter:blur() here. A blurred element that also animates re-rasterises the
+   gaussian every frame. The softness is baked into the gradient stops instead —
+   visually equivalent, and it composites instead of repainting. */
 .a2-rays i{position:absolute;top:0;bottom:0;width:26%;display:block;
-  background:linear-gradient(97deg,transparent 0%,rgba(200,148,58,.05) 38%,
-    rgba(255,244,222,.085) 50%,rgba(200,148,58,.05) 62%,transparent 100%);
-  filter:blur(22px);will-change:transform}
+  background:linear-gradient(97deg,
+    transparent 0%,rgba(200,148,58,.012) 22%,rgba(200,148,58,.032) 36%,
+    rgba(255,244,222,.062) 50%,
+    rgba(200,148,58,.032) 64%,rgba(200,148,58,.012) 78%,transparent 100%);
+  will-change:transform}
 .a2-rays i:nth-child(1){left:6%;  animation:rayDrift 19s var(--e-io) infinite alternate}
 .a2-rays i:nth-child(2){left:38%; animation:rayDrift 25s var(--e-io) infinite alternate-reverse;opacity:.7}
 .a2-rays i:nth-child(3){left:68%; animation:rayDrift 31s var(--e-io) infinite alternate;opacity:.5}
@@ -282,6 +297,22 @@ section{position:relative}
   .a2-rays i,.a2-embers i{animation:none}
   .a2-embers{display:none}
 }
+/* Phones composite a full-screen grain layer far more expensively than they
+   gain from it, and the ray planes are near-invisible at that width. */
+@media(max-width:820px){
+  #grain{display:none}
+  .a2-rays{display:none}
+  #cursor-glow{display:none}
+}
+/* Set by JS when the device reports few cores / low memory: the page keeps its
+   structure and scroll behaviour, and sheds only the ornamental layers. */
+html.lite #grain,
+html.lite .a2-rays,
+html.lite .a2-embers,
+html.lite #cursor-glow,
+html.lite #powder{display:none}
+html.lite .a4-halo,
+html.lite .a7-glow{animation:none}
 .a2-stage{position:relative;z-index:2;text-align:center;padding:0 var(--pad);width:100%}
 .a2-line{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(1100px,92vw);opacity:0;pointer-events:none}
@@ -302,14 +333,19 @@ section{position:relative}
   object-position:center 45%;will-change:transform,filter;
   transform-origin:50% 45%}
 /* the shaft of light that finds the product — matches the colonnade in frame */
+/* mix-blend-mode:screen was here and cost ~35fps on its own: a blend mode on a
+   full-viewport ANIMATED element forces the compositor to read back the whole
+   backdrop every frame. Over a near-black stage, screen-blending a pale
+   gradient is visually almost identical to compositing it normally, so the
+   gradient carries the light on its own. */
 .a3-shaft{position:absolute;inset:-20% -30%;z-index:2;pointer-events:none;
   background:linear-gradient(105deg,
     transparent 0%, transparent 34%,
     rgba(255,246,228,.05) 43%,
-    rgba(255,248,232,.16) 49%,
+    rgba(255,248,232,.18) 49%,
     rgba(255,246,228,.05) 55%,
     transparent 64%, transparent 100%);
-  mix-blend-mode:screen;will-change:transform,opacity;opacity:0}
+  will-change:transform,opacity;opacity:0}
 /* darkness that recedes as the light lands */
 .a3-dark{position:absolute;inset:0;z-index:3;pointer-events:none;background:var(--ink);
   will-change:opacity}
@@ -330,8 +366,9 @@ section{position:relative}
   width:min(760px,120vw);aspect-ratio:1;z-index:0;pointer-events:none;
   background:radial-gradient(circle,rgba(200,148,58,.09) 0%,rgba(30,109,113,.05) 34%,transparent 66%);
   animation:haloBreathe 8s ease-in-out infinite alternate}
-@keyframes haloBreathe{0%{transform:translate(-50%,-50%) scale(.94);opacity:.7}
-  100%{transform:translate(-50%,-50%) scale(1.06);opacity:1}}
+/* opacity-only: animating scale on a large radial gradient forces a repaint of
+   the whole layer; opacity is a pure composite. */
+@keyframes haloBreathe{0%{opacity:.62}100%{opacity:1}}
 .a4-in{position:relative;z-index:2;text-align:center;max-width:720px;width:100%}
 .a4-mark{width:clamp(180px,22vw,280px);height:auto;margin:0 auto clamp(32px,4.4vh,52px);
   filter:drop-shadow(0 0 60px rgba(200,148,58,.35)) drop-shadow(0 0 120px rgba(200,148,58,.15))}
@@ -469,7 +506,7 @@ section{position:relative}
 @media(hover:hover) and (pointer:fine){
   .card:hover .card-img img{transform:scale(1.04)}
 }
-.card-b{padding:clamp(24px,3.4vw,42px)}
+.card-b{padding:clamp(24px,3.4vw,42px);padding-bottom:clamp(64px,6vw,88px)}
 .card-n{font-family:var(--disp);font-size:clamp(1.7rem,3.4vw,2.8rem);
   color:var(--bone);letter-spacing:.03em;line-height:1;margin-bottom:14px}
 .card-d{font-size:.9rem;line-height:1.7;color:var(--mist);font-weight:300;margin-bottom:20px}
@@ -488,8 +525,11 @@ section{position:relative}
   display:grid;place-items:center;padding:clamp(88px,13vh,140px) var(--pad) clamp(80px,12vh,130px)}
 /* atmospheric bed — the product world, pushed way back */
 .a7-bed{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+/* No blur() filter here. The bed loads the 480px variant and stretches it, so
+   the blur is free — it is just an upscaled small image — instead of costing a
+   38px gaussian over a full-bleed surface on every composite. */
 .a7-bed img{width:100%;height:100%;object-fit:cover;object-position:center 40%;
-  filter:blur(38px) saturate(.95) brightness(.62);transform:scale(1.16)}
+  filter:saturate(.95) brightness(.62);transform:scale(1.06)}
 .a7-bed::after{content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse 82% 68% at 50% 46%,rgba(4,6,7,.34) 0%,rgba(4,6,7,.80) 58%,rgba(4,6,7,.97) 100%)}
 #fieldD{position:absolute;inset:0;z-index:1;opacity:.7}
@@ -497,8 +537,7 @@ section{position:relative}
   width:min(980px,140vw);aspect-ratio:1;z-index:1;pointer-events:none;
   background:radial-gradient(circle,rgba(200,148,58,.11) 0%,rgba(30,109,113,.06) 40%,transparent 66%);
   animation:passBreathe 9s ease-in-out infinite alternate}
-@keyframes passBreathe{0%{opacity:.7;transform:translate(-50%,-50%) scale(.96)}
-  100%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}}
+@keyframes passBreathe{0%{opacity:.62}100%{opacity:1}}
 .a7-in{position:relative;z-index:2;width:100%;max-width:740px}
 
 /* ── THE PASS ── */
@@ -506,7 +545,6 @@ section{position:relative}
   background:linear-gradient(168deg,rgba(14,26,28,.93) 0%,rgba(6,14,16,.96) 52%,rgba(4,10,11,.98) 100%);
   border:1px solid rgba(200,148,58,.26);
   padding:clamp(30px,4.4vw,52px) clamp(24px,4vw,54px) clamp(28px,4vw,46px);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   box-shadow:0 40px 120px rgba(0,0,0,.66),inset 0 1px 0 rgba(255,240,210,.07)}
 /* engraved corner marks — it reads as a credential, not a card component */
 .pass span.cm{position:absolute;width:15px;height:15px;pointer-events:none;
@@ -627,7 +665,7 @@ section{position:relative}
 /* ── PERSISTENT RESERVE BAR ── */
 #bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(140%);
   z-index:880;display:flex;align-items:center;gap:16px;
-  background:rgba(10,18,20,.86);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  background:rgba(10,18,20,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border:1px solid rgba(200,148,58,.2);padding:11px 12px 11px 22px;
   transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .5s;
   max-width:calc(100vw - 32px)}
@@ -719,6 +757,12 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <!-- ═══ ACT II — THE SIGNAL ═══ -->
 <section id="act2" aria-label="The signal">
   <div class="a2-pin">
+    <!-- swirl-blue lives here, not in Act III: Act III's plate is full-bleed and
+         covered it completely, so it painted a full-screen image nobody saw.
+         Here it reads as the bed the statements sit on. -->
+    <div class="bdrop" data-bdrop="swirl-blue" aria-hidden="true">
+      <img alt="" loading="lazy" decoding="async">
+    </div>
     <canvas id="fieldB" aria-hidden="true"></canvas>
     <div class="a2-rays" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="a2-embers" id="a2embers" aria-hidden="true"></div>
@@ -737,9 +781,6 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <!-- ═══ ACT III — FRAGMENT ═══ -->
 <section id="act3" aria-label="First look">
   <div class="a3-pin">
-    <div class="bdrop" data-bdrop="swirl-blue" aria-hidden="true">
-      <img alt="" loading="lazy" decoding="async">
-    </div>
     <div class="a3-frame">
       <!-- full-bleed landscape frame: the flavour macros are portrait crops now,
            so the first look uses the dual splash your asset map assigns here -->
@@ -846,7 +887,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
       <div class="a6-rail">
         <article class="card rv">
           <div class="card-img"><img src="assets/blue-razz.webp"
-            srcset="assets/blue-razz-480.webp 480w, assets/blue-razz-768.webp 768w, assets/blue-razz.webp 819w"
+            srcset="assets/blue-razz-480.webp 480w, assets/blue-razz-768.webp 768w, assets/blue-razz.webp 1120w"
             sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER Electric Blue Razz" loading="lazy" decoding="async"></div>
           <div class="card-b">
@@ -858,7 +899,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
         </article>
         <article class="card rv" data-d="1">
           <div class="card-img"><img src="assets/passionfruit.webp"
-            srcset="assets/passionfruit-480.webp 480w, assets/passionfruit-768.webp 768w, assets/passionfruit.webp 819w"
+            srcset="assets/passionfruit-480.webp 480w, assets/passionfruit-768.webp 768w, assets/passionfruit.webp 1120w"
             sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER Passionfruit Citrus" loading="lazy" decoding="async"></div>
           <div class="card-b">
@@ -870,7 +911,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
         </article>
         <article class="card rv" data-d="2">
           <div class="card-img"><img src="assets/both-flavours.webp"
-            srcset="assets/both-flavours-480.webp 480w, assets/both-flavours-768.webp 768w, assets/both-flavours.webp 819w"
+            srcset="assets/both-flavours-480.webp 480w, assets/both-flavours-768.webp 768w, assets/both-flavours.webp 1120w"
             sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER, both flavours" loading="lazy" decoding="async"></div>
           <div class="card-b">
@@ -888,10 +929,9 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <!-- ═══ ACT VII — THE RESERVE ═══ -->
 <section id="act7" aria-label="The EMBER Reserve">
   <div class="a7-bed" aria-hidden="true">
-    <img src="assets/ember-hero.webp"
-      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 2904w"
-      sizes="100vw"
-      alt="" loading="lazy" decoding="async">
+    <!-- deliberately the 480px variant: it is meant to read as an out-of-focus
+         bed, so the upscale IS the blur, at a fraction of the paint cost -->
+    <img src="assets/ember-hero-480.webp" alt="" loading="lazy" decoding="async">
   </div>
   <div class="bdrop" data-bdrop="swirl-gold" style="opacity:0" aria-hidden="true">
     <img alt="" loading="lazy" decoding="async">
@@ -999,6 +1039,12 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 (function(){
 'use strict';
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Shed ornamental layers on hardware that cannot afford them. Structure, copy
+   and scroll behaviour are untouched — only decoration is dropped. */
+const LITE = (navigator.hardwareConcurrency || 8) <= 4 ||
+             (navigator.deviceMemory || 8) <= 4;
+if (LITE) document.documentElement.classList.add('lite');
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const lerp = (a,b,t) => a+(b-a)*t;
@@ -1021,16 +1067,40 @@ $$('.rv,.pass,.mask-line,.a1-eye,.a1-head,.a1-rule,.a1-cta,.a1-scroll').forEach(
 /* ═══════════ PARTICLE FIELD ENGINE ═══════════
    One shared engine; each canvas gets a config.
    Particles respond to scroll velocity — the "living energy source". */
+/* Particle sprites are rendered ONCE into small offscreen canvases and then
+   blitted. Building a radial gradient per particle per frame — which is what
+   this used to do — costs an allocation and a full gradient rasterisation for
+   every dot on every frame, and that alone took the page to single-digit FPS. */
+const SPRITE = (() => {
+  const cache = {};
+  return (rgb, size) => {
+    const key = rgb + '|' + size;
+    if (cache[key]) return cache[key];
+    const s = Math.max(4, Math.ceil(size));
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = s * 2;
+    const c = cv.getContext('2d');
+    const g = c.createRadialGradient(s, s, 0, s, s, s);
+    g.addColorStop(0,   `rgba(${rgb},1)`);
+    g.addColorStop(.42, `rgba(${rgb},.34)`);
+    g.addColorStop(1,   `rgba(${rgb},0)`);
+    c.fillStyle = g; c.fillRect(0, 0, s * 2, s * 2);
+    return (cache[key] = cv);
+  };
+})();
+
 function Field(canvas, cfg){
   if (!canvas) return null;
   const ctx = canvas.getContext('2d', {alpha:true});
   let W=0, H=0, dpr=1, parts=[], raf=null, visible=true;
 
   function size(){
-    dpr = Math.min(window.devicePixelRatio||1, 2);
+    /* DPR is capped at 1.5, not 2: these are soft out-of-focus dots, so the
+       extra pixels are invisible while the fill cost is 1.8x higher. */
+    dpr = Math.min(window.devicePixelRatio||1, 1.5);
     const r = canvas.getBoundingClientRect();
     W = r.width; H = r.height;
-    canvas.width  = W*dpr; canvas.height = H*dpr;
+    canvas.width  = Math.round(W*dpr); canvas.height = Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
 
@@ -1057,7 +1127,8 @@ function Field(canvas, cfg){
   size(); build();
   addEventListener('resize', () => { size(); build(); }, {passive:true});
 
-  const GOLD = [200,148,58], TEAL = [30,109,113];
+  const GOLD = '200,148,58', TEAL = '30,109,113';
+  const SPR_G = SPRITE(GOLD, 32), SPR_T = SPRITE(TEAL, 32);
   let t = 0;
 
   function frame(){
@@ -1068,6 +1139,7 @@ function Field(canvas, cfg){
 
     const boost = 1 + clamp(Math.abs(velSm)/26, 0, 2.4);   // scroll velocity reaction
     const dirY  = clamp(velSm/16, -2.6, 2.6);
+    ctx.globalCompositeOperation = 'lighter';   // additive: no per-dot state churn
 
     for (let i=0;i<parts.length;i++){
       const p = parts[i];
@@ -1081,42 +1153,31 @@ function Field(canvas, cfg){
       if (p.x < -30) p.x = W+20;
       if (p.x > W+30) p.x = -20;
 
-      const c  = p.hue === 'g' ? GOLD : TEAL;
-      const rr = p.r * p.z * (1 + (boost-1)*.3);
-      const al = p.a * p.z * (cfg.aScale||1);
-
-      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rr*3.2);
-      g.addColorStop(0,   `rgba(${c[0]},${c[1]},${c[2]},${al})`);
-      g.addColorStop(.42, `rgba(${c[0]},${c[1]},${c[2]},${al*.34})`);
-      g.addColorStop(1,   `rgba(${c[0]},${c[1]},${c[2]},0)`);
-      ctx.beginPath(); ctx.arc(p.x,p.y,rr*3.2,0,6.2832); ctx.fillStyle=g; ctx.fill();
-
-      // velocity streak
-      if (Math.abs(velSm) > 6){
-        ctx.save();
-        ctx.globalAlpha = al * clamp(Math.abs(velSm)/60,0,.5);
-        ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},.7)`;
-        ctx.lineWidth = rr*.7; ctx.lineCap='round';
-        ctx.beginPath(); ctx.moveTo(p.x,p.y);
-        ctx.lineTo(p.x, p.y + dirY*p.z*13);
-        ctx.stroke(); ctx.restore();
-      }
+      const rr = p.r * p.z * (1 + (boost-1)*.3) * 3.2;
+      ctx.globalAlpha = clamp(p.a * p.z * (cfg.aScale||1), 0, 1);
+      const spr = p.hue === 'g' ? SPR_G : SPR_T;
+      ctx.drawImage(spr, p.x - rr, p.y - rr, rr*2, rr*2);
     }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
   }
 
-  // pause offscreen (perf)
-  new IntersectionObserver(es => { visible = es[0].isIntersecting; },{threshold:0})
-    .observe(canvas);
+  /* Only paint while actually on screen. rootMargin keeps a small lead-in so a
+     field is already running by the time it scrolls into view. */
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; },
+    {threshold:0, rootMargin:'120px'}).observe(canvas);
 
   if (!RM) frame();
-  else { /* draw one static frame */ ctx.clearRect(0,0,W,H); }
+  else { ctx.clearRect(0,0,W,H); }
   return {};
 }
 
-Field($('#fieldA'), {count:110, drift:.24, rise:.30, rMin:.5, rMax:1.9, wob:.20, goldMix:.30, aMin:.16, aMax:.42});
-Field($('#fieldB'), {count:190, drift:.34, rise:.22, rMin:.4, rMax:2.4, wob:.30, goldMix:.22, aMin:.14, aMax:.46});
-Field($('#fieldC'), {count:70,  drift:.18, rise:.16, rMin:.5, rMax:1.7, wob:.16, goldMix:.46, aMin:.14, aMax:.36});
-Field($('#fieldD'), {count:95,  drift:.20, rise:.26, rMin:.5, rMax:2.0, wob:.22, goldMix:.40, aMin:.14, aMax:.40});
+Field($('#fieldA'), {count:60, drift:.24, rise:.30, rMin:.5, rMax:1.9, wob:.20, goldMix:.30, aMin:.16, aMax:.42});
+Field($('#fieldB'), {count:95, drift:.34, rise:.22, rMin:.4, rMax:2.4, wob:.30, goldMix:.22, aMin:.14, aMax:.46});
+// fieldC removed: it sat behind the Act IV halo and read as noise, not atmosphere
+// Field($('#fieldC'), {count:40,  drift:.18, rise:.16, rMin:.5, rMax:1.7, wob:.16, goldMix:.46, aMin:.14, aMax:.36});
+// fieldD removed: the Act VII glow + blurred bed already carry that depth
+// Field($('#fieldD'), {count:52,  drift:.20, rise:.26, rMin:.5, rMax:2.0, wob:.22, goldMix:.40, aMin:.14, aMax:.40});
 
 /* ═══════════ VIDEO ═══════════ */
 const vid = $('#hero');
@@ -1136,8 +1197,22 @@ if (vid && !RM){
   vid.addEventListener('canplay', play, {once:true});
   ['click','touchstart','keydown','scroll'].forEach(ev =>
     document.addEventListener(ev, () => { vid.muted = true; vid.play().catch(()=>{}); }, {once:true, passive:true}));
-  vid.addEventListener('pause', () => setTimeout(play, 200));
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+  /* Off-screen the video is invisible but still decodes and composites every
+     frame — it was the single largest cost on the page. Pause it once Act I is
+     behind us, resume on return. `offscreen` gates the pause-retry above so the
+     two do not fight each other. */
+  let offscreen = false;
+  new IntersectionObserver(es => {
+    offscreen = !es[0].isIntersecting;
+    if (offscreen) vid.pause();
+    else vid.play().catch(()=>{});
+  }, {threshold:.01}).observe(vid);
+
+  vid.addEventListener('pause', () => { if (!offscreen) setTimeout(play, 200); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) vid.pause();
+    else if (!offscreen) play();
+  });
 }
 const sndBtn = $('#sound');
 if (sndBtn && vid){
@@ -1193,6 +1268,21 @@ const skewNow = () => RM ? 0 : clamp(velPage * .22, -5, 5);
 
 function onScroll(){ if (RM) update(); }
 
+/* Writing a style every frame invalidates the layer even when the value is
+   visually identical — and the smoothing lerps keep drifting in the 3rd decimal
+   long after the reader has stopped. This keeps the last written string per
+   element and skips the write when nothing actually changed, so a page at rest
+   settles to zero paint work instead of repainting forever. */
+const _last = new WeakMap();
+function setStyle(el, prop, val){
+  if (!el) return;
+  let m = _last.get(el);
+  if (!m) { m = {}; _last.set(el, m); }
+  if (m[prop] === val) return;
+  m[prop] = val;
+  el.style[prop] = val;
+}
+
 function update(){
   const y  = window.scrollY;
   const vh = innerHeight;
@@ -1200,12 +1290,13 @@ function update(){
   // velocity
   vel   = y - lastY; lastY = y;
   velSm = lerp(velSm, vel, .14);
+  if (Math.abs(velSm) < .01) velSm = 0;
 
   // progress
   const max = document.documentElement.scrollHeight - vh;
-  prog.style.width = (max > 0 ? (y/max)*100 : 0) + '%';
+  setStyle(prog,'width',(max > 0 ? ((y/max)*100).toFixed(2) : 0) + '%');
   /* the bar gains weight while moving — scaleY only, never height */
-  if (!RM) prog.style.transform = 'scaleY(' + (1 + Math.min(Math.abs(velPage)*.5, 2.2)).toFixed(2) + ')';
+  if (!RM) setStyle(prog,'transform','scaleY(' + (1 + Math.min(Math.abs(velPage)*.5, 2.2)).toFixed(2) + ')');
 
   // nav
   nav.classList.toggle('solid', y > vh * .6);
@@ -1233,9 +1324,9 @@ function update(){
           bl = lerp(5, 0, inF) + outF*4;
         }
         if (i === n-1 && p >= lo) o = Math.max(o, 1 - clamp((p-lo)/seg-.86,0,1)/.14*0 );
-        el.style.opacity   = o;
-        el.style.transform = `translate(-50%,-50%) translateY(${ty}px) scale(${sc})`;
-        el.style.filter    = o > .02 ? `blur(${bl}px)` : 'blur(8px)';
+        setStyle(el,'opacity', o.toFixed(3));
+        setStyle(el,'transform',`translate(-50%,-50%) translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(3)})`);
+        setStyle(el,'filter', o > .02 ? `blur(${bl.toFixed(1)}px)` : 'blur(8px)');
         el.classList.toggle('on', o > .5);
       });
       if (a2num) a2num.textContent = String(Math.min(n, Math.floor(p*n)+1)).padStart(2,'0') + ' / ' + String(n).padStart(2,'0');
@@ -1253,26 +1344,30 @@ function update(){
       // the light finds it: exposure + focus resolve, no geometric mask
       const rp = clamp(p/.66, 0, 1);
       const e  = 1 - Math.pow(1 - rp, 3);              // ease-out cubic
-      a3img.style.transform =
-        `scale(${(lerp(1.16,1.05,e) * breath()).toFixed(4)}) ` +
-        `translateY(${lerp(-1.5,1.5,p).toFixed(3)}%) skewY(${skewNow().toFixed(3)}deg)`;
-      a3img.style.filter =
-        `brightness(${lerp(.18, 1, e).toFixed(3)}) ` +
-        `contrast(${lerp(1.32, 1, e).toFixed(3)}) ` +
-        `saturate(${lerp(.35, 1.04, e).toFixed(3)}) ` +
-        `blur(${lerp(9, 0, clamp(e*1.35,0,1)).toFixed(2)}px)`;
-      if (a3dark) a3dark.style.opacity = (1 - e) * .82;
-      if (a3vig)  a3vig.style.opacity  = lerp(1, .34, e).toFixed(3);
+      /* No breath() on the full-bleed plates. A sine on scale means the layer
+         never holds a stable size, so the compositor re-rasterises a
+         full-viewport image on EVERY frame, forever, even at rest — it cost
+         more than half the framerate of this act on its own. The parallax
+         below still moves, but only while the reader is actually scrolling. */
+      setStyle(a3img,'transform',
+        `scale(${lerp(1.16,1.05,e).toFixed(3)}) ` +
+        `translate3d(0,${lerp(-1.5,1.5,p).toFixed(2)}%,0)`);
+      /* No per-frame filter on this image at all. ANY filter change repaints the
+         whole full-bleed layer; the exposure beat is carried by the opacity of
+         the .a3-dark and .a3-vig overlays below, which only composite.
+         Saturation is set once as a static value rather than animated. */
+      if (a3dark) setStyle(a3dark,'opacity',(.34 + (1 - e) * .60).toFixed(3));
+      if (a3vig)  setStyle(a3vig,'opacity', lerp(1, .72, e).toFixed(3));
       if (a3shaft){
         // shaft sweeps through once, brightest at the moment of resolve
         const sp = clamp((p-.06)/.62, 0, 1);
-        a3shaft.style.transform = `translateX(${lerp(-58, 58, sp)}%)`;
-        a3shaft.style.opacity   = Math.sin(sp * Math.PI) * 0.95;
+        setStyle(a3shaft,'transform',`translate3d(${lerp(-58,58,sp).toFixed(2)}%,0,0)`);
+        setStyle(a3shaft,'opacity',(Math.sin(sp*Math.PI)*0.95).toFixed(3));
       }
       if (a3txt){
         const tp = clamp((p-.44)/.26, 0, 1);
-        a3txt.style.opacity = tp;
-        a3txt.style.transform = `translateY(${lerp(24,0,tp)}px)`;
+        setStyle(a3txt,'opacity', tp.toFixed(3));
+        setStyle(a3txt,'transform',`translate3d(0,${lerp(24,0,tp).toFixed(2)}px,0)`);
       }
     }
   }
@@ -1287,9 +1382,9 @@ function update(){
          stage behind the plate at the travel extremes */
       /* breath + velocity skew ride the same transform so the plate
          composites once per frame instead of fighting a second animation */
-      a5img.style.transform =
-        `scale(${(lerp(1.11,1.06,clamp(p*2.2,0,1)) * breath()).toFixed(4)}) ` +
-        `translateY(${lerp(2,-2,p).toFixed(3)}%) skewY(${skewNow().toFixed(3)}deg)`;
+      setStyle(a5img,'transform',
+        `scale(${lerp(1.11,1.06,clamp(p*2.2,0,1)).toFixed(3)}) ` +
+        `translate3d(0,${lerp(2,-2,p).toFixed(2)}%,0)`);
     }
   }
 
@@ -1357,7 +1452,7 @@ function loop(t){
 
   if (a6rail && innerWidth > 800){
     railX = lerp(railX, railTgt, .085);
-    a6rail.style.transform = `translate3d(${railX}px,0,0)`;
+    setStyle(a6rail,'transform',`translate3d(${railX.toFixed(1)}px,0,0)`);
   }
 }
 
@@ -1453,13 +1548,14 @@ function Powder(canvas){
   if (!canvas || RM) return;
   const ctx = canvas.getContext('2d', {alpha:true});
   let W=0, H=0, dpr=1, g=[], vis=false, t=0;
+  const SPR_PG = SPRITE('200,148,58', 24), SPR_PT = SPRITE('150,205,208', 24);
 
   function size(){
-    dpr = Math.min(devicePixelRatio||1, 2);
+    dpr = Math.min(devicePixelRatio||1, 1.5);
     const r = canvas.getBoundingClientRect();
     if (!r.width) return;
     W = r.width; H = r.height;
-    canvas.width = W*dpr; canvas.height = H*dpr;
+    canvas.width = Math.round(W*dpr); canvas.height = Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   function grain(seed){
@@ -1478,7 +1574,7 @@ function Powder(canvas){
   }
   function build(){
     if (!W) return;
-    const n = Math.round(150 * clamp(W/1400, .5, 1.25));
+    const n = Math.round(90 * clamp(W/1400, .5, 1.25));
     g = Array.from({length:n}, () => grain(true));
   }
   size(); build();
@@ -1492,6 +1588,7 @@ function Powder(canvas){
     ctx.clearRect(0,0,W,H);
     // scroll velocity pushes the grain — the field reacts to the reader
     const drag = clamp(velSm/22, -2.2, 2.2);
+    ctx.globalCompositeOperation = 'lighter';
     for (let i=0;i<g.length;i++){
       const p = g[i];
       p.ph += .0085;
@@ -1503,15 +1600,11 @@ function Powder(canvas){
       if (p.x > W+8) p.x = -6;
 
       const rr = p.r * p.z * 2.4;
-      const al = p.a * p.z;
-      const c  = p.gold ? '200,148,58' : '150,205,208';
-      const rg = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rr);
-      rg.addColorStop(0,  `rgba(${c},${al})`);
-      rg.addColorStop(.5, `rgba(${c},${al*.36})`);
-      rg.addColorStop(1,  `rgba(${c},0)`);
-      ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,6.2832);
-      ctx.fillStyle = rg; ctx.fill();
+      ctx.globalAlpha = clamp(p.a * p.z, 0, 1);
+      ctx.drawImage(p.gold ? SPR_PG : SPR_PT, p.x - rr, p.y - rr, rr*2, rr*2);
     }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
   })();
 }
 Powder($('#powder'));

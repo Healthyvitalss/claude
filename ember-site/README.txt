@@ -75,6 +75,37 @@ EDITING
   regenerate those too, or the small screens will keep serving the old crop.
 
 
+LAUNCH BLOCKER — GARBLED LABEL TEXT ON THE PRODUCT RENDERS
+==========================================================
+The supplied product renders carry AI-mangled text on the jar labels. This is
+not a rendering bug on the page; it is baked into the source images.
+
+Worst case, 06-dual-splash-sunset (used for Act III's first look):
+    "HRALTHY VITALES"  /  "HEALTHY VITALSE"   should be HEALTHY VITALSS
+    "ELECTRIC ELUE RA22"                      should be ELECTRIC BLUE RAZZ
+    "20 SERVINGS"                             should be 30 SERVINGS
+    "20 CITRULEINE - S:20 SETA-REANINE"       dose figures are nonsense
+
+Best case, 01-colonnade-pool (Act V) is mostly correct — HEALTHY VITALSS and
+30 SERVINGS both read properly — but the ingredient line still garbles:
+    "200MG PAFFERGE", "PASSIONTRUIT CITRUS", "0:26 BETA-ALONINE"
+
+The 4K upscale made this WORSE in the sense that it made the wrong text
+sharper and easier to read.
+
+Mitigation applied: Act III now holds a much darker floor and a stronger
+vignette, so its plate reads as atmosphere rather than a legible label. That
+is a cover, not a fix.
+
+The actual fix is clean product imagery — real photography, or renders whose
+labels are composited from the true artwork rather than generated. Shipping a
+label that states the wrong serving count and invented ingredient names is a
+regulatory and brand risk, exactly as the brief warned.
+
+Do not launch on these renders without either replacing them or confirming no
+label text is legible at any viewport.
+
+
 KNOWN GAPS — what still needs doing before this is finished
 
 1. IMAGE RESOLUTION — one command fixes this.
