@@ -33,15 +33,18 @@ ASSETS = HERE / "assets"
 
 # source stem -> (output stem, target aspect W/H, crop bias 0..1 top->bottom)
 # aspect matches the CSS container so nothing is squashed or letterboxed.
+# Aspects follow each source's NATIVE ratio wherever the container allows it.
+# These renders are 1536x1024, so every pixel cropped is resolution we cannot
+# get back — the CSS was widened to match rather than the images cut to fit.
 PLAN = {
-    "01-colonnade-pool":     ("ember-hero",     1848 / 940, 0.50),
-    "02-swirl-blue":         ("swirl-blue",     1848 / 940, 0.50),
-    "03-swirl-gold":         ("swirl-gold",     1848 / 940, 0.50),
-    "04-blue-razz-macro":    ("blue-razz",      4 / 5,      0.45),
-    "05-passionfruit-macro": ("passionfruit",   4 / 5,      0.45),
-    "06-dual-splash-sunset": ("dual-sunset",    1848 / 940, 0.50),
-    "07-dual-splash-dark":   ("both-flavours",  4 / 5,      0.45),
-    "08-city-scale":         ("city-scale",     16 / 9,     0.42),
+    "01-colonnade-pool":     ("ember-hero",     16 / 10, 0.50),   # native 1.60, no crop
+    "02-swirl-blue":         ("swirl-blue",     3 / 2,   0.50),   # native 1.50, no crop
+    "03-swirl-gold":         ("swirl-gold",     3 / 2,   0.50),   # native 1.50, no crop
+    "04-blue-razz-macro":    ("blue-razz",      4 / 5,   0.45),   # portrait card, centre-weighted
+    "05-passionfruit-macro": ("passionfruit",   4 / 5,   0.45),
+    "06-dual-splash-sunset": ("dual-sunset",    3 / 2,   0.50),
+    "07-dual-splash-dark":   ("both-flavours",  4 / 5,   0.45),
+    "08-city-scale":         ("city-scale",     16 / 9,  0.40),   # sky headroom absorbs it
 }
 
 VARIANTS = [480, 768, 1080]

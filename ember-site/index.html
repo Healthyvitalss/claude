@@ -375,7 +375,7 @@ section{position:relative}
 .a5-top{text-align:center;padding:clamp(78px,11vh,124px) var(--pad) clamp(24px,3.4vh,38px)}
 /* full-bleed cinematic plate — no boxed border, no card. The plate IS the frame. */
 .a5-stage{position:relative;width:min(1500px,96vw);margin-inline:auto;
-  aspect-ratio:1848/940;overflow:hidden;background:var(--ink);
+  aspect-ratio:16/10;overflow:hidden;background:var(--ink);
   clip-path:inset(0 0 100% 0);
   transition:clip-path 1.5s var(--e-io)}
 .a5-stage.lit{clip-path:inset(0 0 0 0)}
@@ -412,7 +412,7 @@ section{position:relative}
 .a5-spec .k{display:block;font-size:.5rem;letter-spacing:.24em;text-transform:uppercase;
   color:var(--faint);margin-top:10px;line-height:1.4}
 @media(max-width:620px){.a5-spec{grid-template-columns:repeat(2,1fr);row-gap:26px}
-  .a5-stage{aspect-ratio:1848/940;width:100%}}
+  .a5-stage{aspect-ratio:16/10;width:100%}}
 
 /* ── OPTIONAL BACKDROP LAYER ──
    These carry the product-free liquid swirls. Each is absent until its file
@@ -741,8 +741,10 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
       <img alt="" loading="lazy" decoding="async">
     </div>
     <div class="a3-frame">
-      <img id="a3img" src="assets/blue-razz.webp"
-        srcset="assets/blue-razz-480.webp 480w, assets/blue-razz-768.webp 768w, assets/blue-razz-1080.webp 1080w, assets/blue-razz.webp 1544w"
+      <!-- full-bleed landscape frame: the flavour macros are portrait crops now,
+           so the first look uses the dual splash your asset map assigns here -->
+      <img id="a3img" src="assets/dual-sunset.webp"
+        srcset="assets/dual-sunset-480.webp 480w, assets/dual-sunset-768.webp 768w, assets/dual-sunset-1080.webp 1080w, assets/dual-sunset.webp 1536w"
         sizes="100vw"
         alt="EMBER pre-workout, first look" loading="lazy" decoding="async">
       <div class="a3-shaft" id="a3shaft" aria-hidden="true"></div>
@@ -807,8 +809,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
   </div>
   <div class="a5-stage">
     <img id="a5img" src="assets/ember-hero.webp"
-      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1848w"
-      sizes="(max-width:620px) 100vw, 924px"
+      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1586w"
+      sizes="(max-width:620px) 100vw, min(1500px, 96vw)"
       alt="EMBER Pre-Workout, both flavours" loading="lazy" decoding="async">
     <canvas id="powder" aria-hidden="true"></canvas>
     <div class="a5-sweep" aria-hidden="true"></div>
@@ -844,8 +846,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
       <div class="a6-rail">
         <article class="card rv">
           <div class="card-img"><img src="assets/blue-razz.webp"
-            srcset="assets/blue-razz-480.webp 480w, assets/blue-razz-768.webp 768w, assets/blue-razz-1080.webp 1080w, assets/blue-razz.webp 1544w"
-            sizes="(max-width:800px) 82vw, 540px"
+            srcset="assets/blue-razz-480.webp 480w, assets/blue-razz-768.webp 768w, assets/blue-razz.webp 819w"
+            sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER Electric Blue Razz" loading="lazy" decoding="async"></div>
           <div class="card-b">
             <p class="eyebrow" style="margin-bottom:14px">01</p>
@@ -856,8 +858,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
         </article>
         <article class="card rv" data-d="1">
           <div class="card-img"><img src="assets/passionfruit.webp"
-            srcset="assets/passionfruit-480.webp 480w, assets/passionfruit-768.webp 768w, assets/passionfruit-1080.webp 1080w, assets/passionfruit.webp 1544w"
-            sizes="(max-width:800px) 82vw, 540px"
+            srcset="assets/passionfruit-480.webp 480w, assets/passionfruit-768.webp 768w, assets/passionfruit.webp 819w"
+            sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER Passionfruit Citrus" loading="lazy" decoding="async"></div>
           <div class="card-b">
             <p class="eyebrow" style="margin-bottom:14px">02</p>
@@ -868,8 +870,8 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
         </article>
         <article class="card rv" data-d="2">
           <div class="card-img"><img src="assets/both-flavours.webp"
-            srcset="assets/both-flavours-480.webp 480w, assets/both-flavours-768.webp 768w, assets/both-flavours-1080.webp 1080w, assets/both-flavours.webp 1260w"
-            sizes="(max-width:800px) 82vw, 540px"
+            srcset="assets/both-flavours-480.webp 480w, assets/both-flavours-768.webp 768w, assets/both-flavours.webp 819w"
+            sizes="(max-width:800px) 82vw, 480px"
             alt="EMBER, both flavours" loading="lazy" decoding="async"></div>
           <div class="card-b">
             <p class="eyebrow" style="margin-bottom:14px">03</p>
@@ -887,7 +889,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <section id="act7" aria-label="The EMBER Reserve">
   <div class="a7-bed" aria-hidden="true">
     <img src="assets/ember-hero.webp"
-      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1848w"
+      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1586w"
       sizes="100vw"
       alt="" loading="lazy" decoding="async">
   </div>
