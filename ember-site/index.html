@@ -744,7 +744,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
       <!-- full-bleed landscape frame: the flavour macros are portrait crops now,
            so the first look uses the dual splash your asset map assigns here -->
       <img id="a3img" src="assets/dual-sunset.webp"
-        srcset="assets/dual-sunset-480.webp 480w, assets/dual-sunset-768.webp 768w, assets/dual-sunset-1080.webp 1080w, assets/dual-sunset.webp 1536w"
+        srcset="assets/dual-sunset-480.webp 480w, assets/dual-sunset-768.webp 768w, assets/dual-sunset-1080.webp 1080w, assets/dual-sunset.webp 3024w"
         sizes="100vw"
         alt="EMBER pre-workout, first look" loading="lazy" decoding="async">
       <div class="a3-shaft" id="a3shaft" aria-hidden="true"></div>
@@ -809,7 +809,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
   </div>
   <div class="a5-stage">
     <img id="a5img" src="assets/ember-hero.webp"
-      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1586w"
+      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 2904w"
       sizes="(max-width:620px) 100vw, min(1500px, 96vw)"
       alt="EMBER Pre-Workout, both flavours" loading="lazy" decoding="async">
     <canvas id="powder" aria-hidden="true"></canvas>
@@ -889,7 +889,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 <section id="act7" aria-label="The EMBER Reserve">
   <div class="a7-bed" aria-hidden="true">
     <img src="assets/ember-hero.webp"
-      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 1586w"
+      srcset="assets/ember-hero-480.webp 480w, assets/ember-hero-768.webp 768w, assets/ember-hero-1080.webp 1080w, assets/ember-hero.webp 2904w"
       sizes="100vw"
       alt="" loading="lazy" decoding="async">
   </div>
@@ -1378,7 +1378,7 @@ function mountOptional(el, name, sizes){
   const img = el.tagName === 'IMG' ? el : el.querySelector('img');
   if (!img) return;
   img.srcset = `assets/${name}-480.webp 480w, assets/${name}-768.webp 768w, ` +
-               `assets/${name}-1080.webp 1080w, assets/${name}.webp 1920w`;
+               `assets/${name}-1080.webp 1080w, assets/${name}.webp 3024w`;
   img.sizes = sizes;
   img.src = `assets/${name}.webp`;
   const host = el.tagName === 'IMG' ? el.closest('section') : el;
