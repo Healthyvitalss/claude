@@ -36,6 +36,13 @@ a{text-decoration:none;color:inherit}
   html{scroll-behavior:auto}
 }
 
+/* ── CURSOR GLOW ── */
+#cursor-glow{position:fixed;top:0;left:0;width:500px;height:500px;border-radius:50%;
+  pointer-events:none;z-index:9997;
+  background:radial-gradient(circle,rgba(200,148,58,.05) 0%,rgba(30,109,113,.025) 42%,transparent 70%);
+  transform:translate(-9999px,-9999px);will-change:transform;
+  transition:opacity .5s;opacity:0}
+
 /* ── FILM GRAIN ── */
 #grain{position:fixed;inset:-50%;z-index:9998;pointer-events:none;opacity:.045;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -60,8 +67,11 @@ a{text-decoration:none;color:inherit}
   border-bottom:1px solid rgba(200,148,58,.10)}
 .n-l{grid-column:1;display:flex;gap:clamp(18px,2.6vw,34px);align-items:center;min-width:0}
 .n-l a{font-size:.62rem;font-weight:500;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--faint);transition:color .3s}
+  color:var(--faint);transition:color .3s;position:relative;padding-bottom:3px}
+.n-l a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;
+  background:var(--gold);transition:width .38s cubic-bezier(.16,1,.3,1)}
 .n-l a:hover{color:var(--gold-lt)}
+.n-l a:hover::after{width:100%}
 .n-c{display:flex;justify-content:center;align-items:center}
 .n-c img{height:clamp(30px,3.4vw,42px);width:auto;
   filter:drop-shadow(0 0 8px rgba(200,148,58,.25));transition:filter .6s}
@@ -69,10 +79,13 @@ a{text-decoration:none;color:inherit}
 .n-cta{font-size:.6rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
   color:var(--bone);border:1px solid rgba(200,148,58,.4);padding:10px 20px;
   transition:background .3s ease,color .3s ease,border-color .3s ease,
-    transform .16s cubic-bezier(.23,1,.32,1);
-  cursor:pointer;background:none;font-family:var(--body);white-space:nowrap}
+    transform .38s cubic-bezier(.23,1,.32,1),box-shadow .38s;
+  cursor:pointer;background:none;font-family:var(--body);white-space:nowrap;
+  --mx:0px;--my:0px}
 @media(hover:hover) and (pointer:fine){
-  .n-cta:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+  .n-cta:hover{background:var(--gold);color:var(--ink);border-color:var(--gold);
+    transform:translate(var(--mx),var(--my));
+    box-shadow:0 12px 36px rgba(200,148,58,.22)}
 }
 .n-cta:active{transform:scale(.97)}
 #sound{width:30px;height:30px;border:1px solid rgba(242,239,233,.16);background:none;
@@ -228,8 +241,8 @@ section{position:relative}
 @keyframes haloBreathe{0%{transform:translate(-50%,-50%) scale(.94);opacity:.7}
   100%{transform:translate(-50%,-50%) scale(1.06);opacity:1}}
 .a4-in{position:relative;z-index:2;text-align:center;max-width:720px;width:100%}
-.a4-mark{width:clamp(104px,12vw,146px);margin:0 auto clamp(26px,3.6vh,40px);
-  filter:drop-shadow(0 0 40px rgba(200,148,58,.28))}
+.a4-mark{width:clamp(180px,22vw,280px);height:auto;margin:0 auto clamp(32px,4.4vh,52px);
+  filter:drop-shadow(0 0 60px rgba(200,148,58,.35)) drop-shadow(0 0 120px rgba(200,148,58,.15))}
 .a4-body{margin-top:clamp(22px,3.2vh,32px);margin-inline:auto;text-align:center}
 .a4-triad{display:grid;grid-template-columns:repeat(3,1fr);
   gap:clamp(16px,3vw,44px);margin-top:clamp(40px,6vh,68px);
@@ -240,6 +253,29 @@ section{position:relative}
 .a4-triad .d{font-size:.68rem;line-height:1.6;color:var(--faint);
   margin-top:11px;font-weight:300;letter-spacing:.02em}
 @media(max-width:560px){.a4-triad{grid-template-columns:1fr;gap:24px;text-align:center}}
+
+/* ── SPEC TICKER ── */
+.ticker{overflow:hidden;border-top:1px solid rgba(200,148,58,.10);
+  border-bottom:1px solid rgba(200,148,58,.10);padding:15px 0;
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.ticker-tr{display:flex;gap:clamp(32px,5vw,80px);animation:tick 28s linear infinite;
+  white-space:nowrap;width:max-content}
+.ticker-tr span{font-size:.5rem;letter-spacing:.38em;text-transform:uppercase;
+  color:rgba(242,239,233,.28);font-variant-numeric:tabular-nums}
+.ticker-tr b{color:rgba(200,148,58,.5);font-weight:400}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.ticker-tr{animation-play-state:paused}}
+
+/* ── ACT IV BEAM ── */
+.a4-beam{position:absolute;top:-20%;left:-40%;width:180%;height:140%;pointer-events:none;
+  background:linear-gradient(112deg,
+    transparent 0%,transparent 43%,
+    rgba(200,148,58,.03) 49%,rgba(200,148,58,.09) 51%,
+    transparent 57%,transparent 100%);
+  transform:translateX(-100%);z-index:1;will-change:transform}
+.a4-in.beam-swept .a4-beam{transform:translateX(220%);
+  transition:transform 2.2s cubic-bezier(.25,.46,.45,.94) .15s}
 
 /* ═══ ACT V — REVEAL ═══ */
 #act5{background:var(--ink);position:relative;overflow:hidden;
@@ -274,10 +310,21 @@ section{position:relative}
 .a6-pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;align-items:center}
 .a6-rail{display:flex;gap:clamp(20px,3vw,48px);padding-inline:clamp(20px,8vw,140px);
   will-change:transform}
-.card{flex:0 0 min(540px,82vw);position:relative;background:var(--carbon);
-  border:1px solid rgba(200,148,58,.09);overflow:hidden}
-.card-img{aspect-ratio:3/2;overflow:hidden;position:relative;background:var(--ink)}
-.card-img img{width:100%;height:100%;object-fit:cover;
+.card{flex:0 0 min(480px,82vw);position:relative;background:var(--carbon);
+  border:1px solid rgba(200,148,58,.09);overflow:hidden;
+  transition:border-color .5s cubic-bezier(.16,1,.3,1),
+    box-shadow .5s cubic-bezier(.16,1,.3,1)}
+.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0);transform-origin:center;
+  transition:transform .6s cubic-bezier(.16,1,.3,1)}
+@media(hover:hover) and (pointer:fine){
+  .card:hover{border-color:rgba(200,148,58,.22);
+    box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(200,148,58,.06)}
+  .card:hover::after{transform:scaleX(1)}
+}
+.card-img{aspect-ratio:4/5;overflow:hidden;position:relative;background:var(--ink)}
+.card-img img{width:100%;height:100%;object-fit:cover;object-position:center 22%;
   transition:transform .9s cubic-bezier(.23,1,.32,1)}
 @media(hover:hover) and (pointer:fine){
   .card:hover .card-img img{transform:scale(1.04)}
@@ -377,13 +424,14 @@ section{position:relative}
   color:#120C02;border:none;padding:16px clamp(20px,3vw,34px);
   font-family:var(--body);font-size:.64rem;font-weight:700;letter-spacing:.2em;
   text-transform:uppercase;cursor:pointer;white-space:nowrap;
-  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .4s,filter .3s}
+  transition:transform .38s cubic-bezier(.16,1,.3,1),box-shadow .4s,filter .3s;
+  --mx:0px;--my:0px}
 .fbtn::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);
   transition:left .7s cubic-bezier(.16,1,.3,1)}
 @media(hover:hover) and (pointer:fine){
-  .fbtn:hover{transform:translateY(-2px);filter:brightness(1.06);
-    box-shadow:0 16px 44px rgba(200,148,58,.34)}
+  .fbtn:hover{transform:translate(var(--mx),var(--my)) translateY(-2px);
+    filter:brightness(1.06);box-shadow:0 16px 44px rgba(200,148,58,.34)}
   .fbtn:hover::after{left:140%}
 }
 .fbtn:active{transform:scale(.97)}
@@ -485,6 +533,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
 </head>
 <body>
 
+<div id="cursor-glow" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 <div id="prog" aria-hidden="true"></div>
 
@@ -567,6 +616,7 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
   <canvas id="fieldC" aria-hidden="true"></canvas>
   <div class="a4-halo" aria-hidden="true"></div>
   <div class="a4-in">
+    <div class="a4-beam" aria-hidden="true"></div>
     <img class="a4-mark rv" src="assets/logo-full.png" alt="Healthy Vitalss" width="1086" height="1448" loading="lazy" decoding="async">
     <h2 class="sect-t rv" data-d="1"><span class="mask-line"><span>A STANDARD,<br>NOT A SHORTCUT.</span></span></h2>
     <p class="lede a4-body rv" data-d="2">Every ingredient chosen with clinical intent. Every dose disclosed. Nothing hidden behind a proprietary blend — a formula built to be examined, not marketed.</p>
@@ -577,6 +627,31 @@ footer .dot{width:3px;height:3px;border-radius:50%;background:rgba(200,148,58,.5
     </div>
   </div>
 </section>
+
+<!-- ── SPEC TICKER ── -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-tr">
+    <span>6G Citrulline</span><b>·</b>
+    <span>3.2G Beta&#8209;Alanine</span><b>·</b>
+    <span>200MG Caffeine</span><b>·</b>
+    <span>30 Servings</span><b>·</b>
+    <span>Precision</span><b>·</b>
+    <span>Endurance</span><b>·</b>
+    <span>Clarity</span><b>·</b>
+    <span>EMBER Pre&#8209;Workout</span><b>·</b>
+    <span>Healthy Vitalss</span><b>·</b>
+    <!-- duplicate for seamless wrap -->
+    <span>6G Citrulline</span><b>·</b>
+    <span>3.2G Beta&#8209;Alanine</span><b>·</b>
+    <span>200MG Caffeine</span><b>·</b>
+    <span>30 Servings</span><b>·</b>
+    <span>Precision</span><b>·</b>
+    <span>Endurance</span><b>·</b>
+    <span>Clarity</span><b>·</b>
+    <span>EMBER Pre&#8209;Workout</span><b>·</b>
+    <span>Healthy Vitalss</span><b>·</b>
+  </div>
+</div>
 
 <!-- ═══ ACT V — THE REVEAL ═══ -->
 <section id="act5" aria-label="EMBER">
@@ -937,9 +1012,9 @@ const bar = $('#bar');
    snaps a section — it settles into place. One loop drives all of it. */
 let railX = 0, railTgt = 0;
 
-const SM = {a2:0, a3:0, a5:0, a6:0, vid:0};   // smoothed
-const TG = {a2:0, a3:0, a5:0, a6:0, vid:0};   // targets
-const EASE = .13;                              // chase rate
+const SM = {a2:0, a3:0, a5:0, a6:0};   // smoothed
+const TG = {a2:0, a3:0, a5:0, a6:0};   // targets
+const EASE = .13;                       // chase rate
 
 function onScroll(){ if (RM) update(); }
 
@@ -957,9 +1032,6 @@ function update(){
 
   // nav
   nav.classList.toggle('solid', y > vh * .6);
-
-  // Act I video playhead follows the opening screen
-  TG.vid = clamp(y / vh, 0, 1);
 
   /* ── ACT II: statement sequence ── */
   if (a2){
@@ -1057,25 +1129,11 @@ function update(){
   }
 }
 
-/* ── ACT I: scrub the hero loop to scroll through the first viewport ──
-   The video is a short loop, so its playhead is mapped across the opening
-   screen. Seeking only lands on the nearest keyframe in this encode — a
-   keyframe-dense (frame-seekable) re-encode is what makes it truly exact. */
-function scrubVideo(){
-  if (!vid || RM || !vid.duration || !isFinite(vid.duration)) return;
-  const p = SM.vid;
-  if (p <= 0 || p >= 1){ if (vid.paused) vid.play().catch(()=>{}); return; }
-  if (!vid.paused) vid.pause();
-  const t = p * vid.duration;
-  if (Math.abs(vid.currentTime - t) > .02) vid.currentTime = t;
-}
-
 /* one loop: sample targets, settle the smoothed values, paint */
 function loop(){
   requestAnimationFrame(loop);
   update();
   for (const k in SM) SM[k] = lerp(SM[k], TG[k], EASE);
-  scrubVideo();
   if (a6rail && innerWidth > 800){
     railX = lerp(railX, railTgt, .085);
     a6rail.style.transform = `translate3d(${railX}px,0,0)`;
@@ -1087,6 +1145,52 @@ addEventListener('resize', onScroll, {passive:true});
 update();
 if (RM){ for (const k in SM) SM[k] = TG[k]; update(); }
 else loop();
+
+/* ═══════════ CURSOR GLOW ═══════════ */
+const cg = $('#cursor-glow');
+if (cg && !RM){
+  let cgX = 0, cgY = 0, tgX = 0, tgY = 0, cgActive = false;
+  document.addEventListener('mousemove', e => {
+    tgX = e.clientX; tgY = e.clientY;
+    if (!cgActive){ cgX = tgX; cgY = tgY; cgActive = true; }
+    cg.style.opacity = '1';
+  }, {passive:true});
+  document.addEventListener('mouseleave', () => { cg.style.opacity = '0'; });
+  (function cgLoop(){
+    requestAnimationFrame(cgLoop);
+    if (!cgActive) return;
+    cgX = lerp(cgX, tgX, .088);
+    cgY = lerp(cgY, tgY, .088);
+    cg.style.transform = `translate(${cgX - 250}px,${cgY - 250}px)`;
+  })();
+}
+
+/* ═══════════ MAGNETIC BUTTONS ═══════════ */
+if (!RM){
+  $$('.n-cta, .fbtn, #bar .go, .a1-cta').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width  - .5) * 14;
+      const y = ((e.clientY - r.top)  / r.height - .5) * 10;
+      btn.style.setProperty('--mx', x + 'px');
+      btn.style.setProperty('--my', y + 'px');
+    }, {passive:true});
+    btn.addEventListener('mouseleave', () => {
+      btn.style.setProperty('--mx','0px');
+      btn.style.setProperty('--my','0px');
+    });
+  });
+}
+
+/* ═══════════ ACT IV BEAM ═══════════ */
+const a4In = $('.a4-in');
+if (a4In && !RM){
+  new IntersectionObserver((es, obs) => {
+    if (!es[0].isIntersecting) return;
+    obs.disconnect();
+    setTimeout(() => a4In.classList.add('beam-swept'), 80);
+  }, {threshold:.3}).observe(a4In);
+}
 
 /* ═══════════ SPEC COUNT-UP ═══════════ */
 const specIO = new IntersectionObserver(es => {
