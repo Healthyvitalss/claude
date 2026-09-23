@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-state="attract">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Healthy Vitalss — Founding 250</title>
+<meta name="description" content="Join the Founding 250: the first members of Healthy Vitalss, before the first release.">
+<meta name="theme-color" content="#ECE6DA">
+<meta name="color-scheme" content="light">
+<meta name="format-detection" content="telephone=no, email=no, address=no, date=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Founding 250">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="preload" href="/assets/fonts/libre-caslon-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/instrument-sans-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/instrument-sans-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/app.css">
+<script src="/app.js" defer></script>
+</head>
+<body>
+
+<!-- The wall: warm ivory mineral plaster, lit. Light and shadow move; nothing else does. -->
+<div class="ground" aria-hidden="true">
+  <div class="light light-key"></div>
+  <div class="light light-cool"></div>
+  <div class="light light-warm"></div>
+  <div class="grain"></div>
+  <div class="plinth"><div class="plinth-grain"></div></div>
+</div>
+
+<main class="stage" id="stage">
+
+  <header class="brand" id="brand">
+    <svg class="mono" id="mono" viewBox="0 0 1318.36 818.57" role="img" aria-label="Healthy Vitalss">
+      <defs>
+        <path id="hv" d="M1133.69 0.84L1318.34 0.84L1318.34 10.76C1241.57 47.82 1235.63 74.12 1201.89 151.53L911.12 818.55L896.24 818.55L704.71 380.07L195.82 380.07L195.82 725.19C195.82 779.67 245.27 794.87 284.94 804.3L284.94 815.42L0.05 815.42L0.05 805.91C45.16 787.68 85.17 782.26 85.17 716.94L85.17 94.05C85.17 29.64 44.68 26.16 0.23 12.34L0.23 0.84L284.95 0.84L284.95 12.79C225.17 29.86 195.82 37.45 195.82 113.21L195.82 344.62L689.22 344.62L570.34 72.45C553.46 33.8 518.38 25.13 484.74 12.03L484.74 0.84L758.55 0.84L758.55 13.32C700.16 31.16 682.4 43.87 711.16 110.04L948.82 656.83L1169.81 154.93C1206.06 72.6 1217.74 45.84 1133.69 11.18L1133.69 0.84Z"/>
+        <!-- satin sheen: a soft band of light that follows the room light across the mark -->
+        <linearGradient id="sheen" gradientUnits="userSpaceOnUse" x1="-700" y1="0" x2="-100" y2="818">
+          <stop offset="0" stop-color="#fff6e6" stop-opacity="0"/>
+          <stop offset=".38" stop-color="#fff6e6" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#fff6e6" stop-opacity=".17"/>
+          <stop offset=".62" stop-color="#fff6e6" stop-opacity="0"/>
+          <stop offset="1" stop-color="#fff6e6" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <use href="#hv" class="mono-ink"/>
+      <use href="#hv" class="mono-sheen" fill="url(#sheen)"/>
+    </svg>
+    <img class="word" id="word" src="/assets/hv-wordmark.svg" alt="" width="2695" height="137" draggable="false">
+  </header>
+
+  <!-- 1 · Attract -->
+  <section class="panel panel-attract" id="p-attract" aria-labelledby="h-attract">
+    <div class="copy">
+      <p class="eyebrow">Founding 250 <span class="dot" aria-hidden="true"></span> Olympia 2026</p>
+      <h1 class="display" id="h-attract"><span class="line">You found</span> <span class="line">us early.</span></h1>
+      <p class="lede">Join the first 250 members of Healthy&nbsp;Vitalss, before the first&nbsp;release.</p>
+    </div>
+    <button class="action action-on-plinth" id="begin" type="button"><span class="action-label">Claim your place</span></button>
+  </section>
+
+  <!-- 2 · Capture -->
+  <section class="panel panel-capture" id="p-capture" aria-labelledby="h-capture" inert>
+    <h2 class="display display-s" id="h-capture">Claim your place.</h2>
+    <p class="lede lede-s" id="capture-lede">Your place in the Founding&nbsp;250, held in your name.</p>
+    <form class="form" id="form" novalidate autocomplete="off" spellcheck="false">
+      <label class="field" id="f-first">
+        <span class="field-label">First name</span>
+        <input id="first" name="hv-given" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="next" maxlength="60" required aria-describedby="msg">
+      </label>
+      <label class="field" id="f-email">
+        <span class="field-label">Email</span>
+        <input id="email" name="hv-contact" type="email" inputmode="email" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" maxlength="254" required aria-describedby="msg">
+      </label>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      <button class="action action-submit" id="save" type="submit"><span class="action-label">Save my place</span></button>
+      <p class="fine" id="fine">By joining, you agree to receive emails from Healthy&nbsp;Vitalss. Unsubscribe anytime. <span class="fine-privacy">Privacy: healthyvitalss.com/privacy</span></p>
+    </form>
+  </section>
+
+  <!-- 3 · Payoff -->
+  <section class="panel panel-payoff" id="p-payoff" aria-labelledby="h-payoff" inert>
+    <div class="copy">
+      <div class="token" aria-hidden="true">
+        <div class="token-face">
+          <svg class="token-mono" viewBox="-60 -60 1438.36 938.57"><use href="#hv"/></svg>
+        </div>
+      </div>
+      <p class="eyebrow eyebrow-payoff">Founding Member <span class="dot" aria-hidden="true"></span> Olympia 2026</p>
+      <h2 class="display display-m" id="h-payoff"><span class="line">You&rsquo;re in,</span> <span class="line"><span id="who">friend</span>.</span></h2>
+      <p class="lede lede-s" id="payoff-body">You found Healthy&nbsp;Vitalss before the first release. Your Founding Member number and a note from our founder will follow by&nbsp;email.</p>
+    </div>
+    <div class="plinth-row">
+      <p class="signoff">Built, not yet released.</p>
+      <button class="done" id="done" type="button">Done</button>
+    </div>
+    <div class="hold" aria-hidden="true"><span></span></div>
+  </section>
+
+</main>
+
+<!-- Staff only: long-press the wordmark (2 s) or tap it five times. Never shown to visitors. -->
+<div class="staff" id="staff" hidden>
+  <div class="staff-card" role="dialog" aria-modal="true" aria-labelledby="staff-title">
+    <h2 id="staff-title">Kiosk status</h2>
+    <dl class="staff-grid">
+      <dt>Waiting to sync</dt><dd id="s-pending">0</dd>
+      <dt>Synced on this device</dt><dd id="s-sent">0</dd>
+      <dt>Needs attention</dt><dd id="s-rejected">0</dd>
+      <dt>Last sync</dt><dd id="s-last">—</dd>
+      <dt>Connection</dt><dd id="s-net">—</dd>
+      <dt>Motion</dt><dd id="s-motion">—</dd>
+      <dt>Mode</dt><dd id="s-mode">—</dd>
+    </dl>
+    <p class="staff-note" id="s-note"></p>
+    <div class="staff-row">
+      <button type="button" id="s-sync" class="primary">Sync now</button>
+      <button type="button" id="s-motion-btn">Enable motion</button>
+      <button type="button" id="s-csv">Export waiting</button>
+      <button type="button" id="s-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<noscript><p class="noscript">Please turn on JavaScript to join the Healthy Vitalss Founding 250.</p></noscript>
+</body>
+</html>

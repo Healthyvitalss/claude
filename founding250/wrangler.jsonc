@@ -1,0 +1,10 @@
+{
+  // Static site on Cloudflare Workers. `npx wrangler deploy` publishes to the existing hv-founding250 worker;
+  // add `--name hv-founding250-preview` to publish a review copy without touching the live kiosk.
+  "name": "hv-founding250",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -1,0 +1,2 @@
+Libre Caslon Display, Libre Caslon Text: Copyright 2012 The Libre Caslon Project Authors. Instrument Sans: Copyright 2022 The Instrument Sans Project Authors.
+All licensed under the SIL Open Font License 1.1 (https://openfontlicense.org). Files from @fontsource on npm.

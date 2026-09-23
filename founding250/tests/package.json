@@ -1,0 +1,11 @@
+{
+  "name": "hv-founding250-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node kiosk.test.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.56.0"
+  }
+}
